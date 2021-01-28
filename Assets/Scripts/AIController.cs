@@ -167,6 +167,7 @@ public class AIController : MonoBehaviour
             //try to use gem
             //spawn effects
             //kill monke
+
             //drop gems
         }
     }
