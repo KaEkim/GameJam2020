@@ -174,21 +174,21 @@ public class AIController : MonoBehaviour
     float checkDistanceToPlayer()
     {
         float dist = Vector3.Distance(player.transform.position, transform.position);
-        print(dist);
+        //print(dist);
         return dist;
     }
 
     float checkDistanceToCenter()
     {
         float dist = Vector3.Distance(centerOfMap.transform.position, transform.position);
-        print(dist);
+        //print(dist);
         return dist;
     }
 
     float checkDistanceToPoint(Vector3 point)
     {
         float dist = Vector3.Distance(point, transform.position);
-        print(dist);
+        //print(dist);
         return dist;
     }
 }

@@ -37,14 +37,12 @@ public class FollowPlayer : MonoBehaviour
         transform.position = Vector3.SmoothDamp(transform.position, direction, ref velocity, SmoothTime);
         //transform.rotation = target.transform.rotation;
 
-
         float h = spinY * Input.GetAxis("Mouse X") * Time.deltaTime;
 
         rotationAmount += h;
 
         //float v = spinY * Input.GetAxis("Mouse Y");
         actualMove = rotationAmount / 2;
-        print(actualMove);
 
         transform.Rotate(0, actualMove, 0);
 

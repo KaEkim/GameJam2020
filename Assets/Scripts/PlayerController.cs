@@ -13,9 +13,17 @@ public class PlayerController : MonoBehaviour
     int spinX = 30;
     int spinY = 1;
     float rotationAmount = 0;
+    public static int fireBallCharge = 0;
 
     public Transform target;
-    
+    public GameObject fireBallPrefab;
+    public GameObject shieldPrefab;
+
+    public float fireCoolDown = 0;
+
+    public bool hasFireGem = true;
+    public bool hasshieldGem = true;
+
 
     // Start is called before the first frame update
     void Start()
@@ -30,16 +38,36 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 
-        //Shooting Input
 
-        //Setup for bullet rotation
+        ////SpawnsFireBall    
+        if (hasFireGem && fireCoolDown <=0)
+        {
+            //ChargesFireBall
+            if (Input.GetKey(KeyCode.E))
+            {
+                fireBallCharge++;
+            }
+            //LaunchFireballFunction
+            if (Input.GetKeyUp(KeyCode.E))
+            {
+                spawnFireBall(fireBallCharge);
+            }
+        }
+
+
+
+        //LaunchShield
+        if (Input.GetKey(KeyCode.F))
+        {
+            spawnShield();
+        }
 
 
 
         //Input for movement
         if (Input.GetKey(KeyCode.A))
         {
-            
+            //RotateTowardCamera();
             if (rb.velocity.magnitude < maxSpeed)
             {
                 if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
@@ -54,6 +82,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.D))
         {
+            //RotateTowardCamera();
             if (rb.velocity.magnitude < maxSpeed)
             {
                 if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
@@ -67,6 +96,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.S))
         {
+            RotateTowardCamera();
             if (rb.velocity.magnitude < maxSpeed)
             {
                 if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
@@ -92,10 +122,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void spawnFireBall(int multiplier)
+    {
+        Instantiate(fireBallPrefab, this.transform.position, this.transform.rotation);
+    }
+
+    private void spawnShield()
+    {
+        Instantiate(shieldPrefab, this.transform.position, this.transform.rotation);
+    }
+
     private void RotateTowardCamera()
     {
+
         Vector3 targetDir = target.position - transform.position;
-        float singleStep = 20 * Time.deltaTime;
+        float singleStep = 5 * Time.deltaTime;
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDir, singleStep, 0.0f);
 
         //Vector3 newestDirection = new Vector3(.x, this.transform.rotation.y, this.transform.rotation.z);
