@@ -44,5 +44,4 @@ public class FireBall : MonoBehaviour
         Instantiate(fireBallExplosion, this.transform.position, this.transform.rotation);
         Destroy(this.gameObject);
     }
-
 }
