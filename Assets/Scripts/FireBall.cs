@@ -13,6 +13,9 @@ public class FireBall : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //StartsCooldownInsidePlayerController
+        PlayerController.resetFireToggle = true;
+
         //set spawn location so we can track distance from that later
         initialLocation = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
     }

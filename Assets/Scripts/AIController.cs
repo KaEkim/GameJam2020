@@ -206,7 +206,6 @@ public class AIController : MonoBehaviour
         return dist;
     }
 
-
     private void OnCollisionEnter(Collision collision)
     {
         print("hit");        
@@ -216,7 +215,6 @@ public class AIController : MonoBehaviour
             takeDamage(50);
         }
     }
-
 
     public void takeDamage(int damage)
     {

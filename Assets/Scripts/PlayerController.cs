@@ -46,6 +46,14 @@ public class PlayerController : MonoBehaviour
     public bool hasSummonGem = true;
     public bool hasFlightGem = true;
 
+    //Reset Booleans
+    [Header("Reset Booleans")]
+    public static bool resetFireToggle = false;
+    public static bool resetShieldToggle = false;
+    public static bool resetLightningToggle = false;
+    public static bool resetSummonToggle = false;
+    public static bool resetFlightToggle = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -72,16 +80,18 @@ public class PlayerController : MonoBehaviour
             //LaunchFireballFunction
             if (Input.GetKeyUp(KeyCode.E))
             {
-                spawnFireBall(fireBallCharge);
+                spawnFireBall();
+                fireCoolDown = false;
             }
         }
 
 
 
         //LaunchShield
-        if (Input.GetKey(KeyCode.V) && hasShieldGem && !GameObject.FindGameObjectWithTag("Shield"))
+        if (Input.GetKey(KeyCode.V) && hasShieldGem && !GameObject.FindGameObjectWithTag("Shield") && shieldCoolDown)
         {
             spawnShield();
+            shieldCoolDown = false;
         }
 
 
@@ -168,9 +178,45 @@ public class PlayerController : MonoBehaviour
                 else rb.AddForce(transform.forward * speed * Time.deltaTime);
             }
         }
+
+        //Incase you need this @Jacob to edit the times of cooldowns
+        // Invoke("NameOfFunction", TimeInSeconds)
+
+        //Check for Reset Toggles to be true, if so, "Invoke" command will reset them using functions below
+        if (resetFireToggle) { Invoke("resetFire", 3); resetFireToggle = false; }
+        if (resetShieldToggle) { Invoke("resetShield", 30); resetShieldToggle = false; }
+        if (resetLightningToggle) { Invoke("resetLightning", 50); resetLightningToggle = false; }
+        if (resetSummonToggle) { Invoke("resetSummon", 60); resetSummonToggle = false; }
+        if (resetFlightToggle) { Invoke("resetFlight", 30); resetFlightToggle = false; }
     }
 
-    private void spawnFireBall(int multiplier)
+    //Reset Abilities
+    private void resetFire()
+    {
+        fireCoolDown = true;
+    }
+    private void resetShield()
+    {
+        shieldCoolDown = true;
+    }
+    private void resetLightning()
+    {
+        lightningCoolDown = true;
+    }
+    private void resetSummon()
+    {
+        summonCoolDown = true;
+    }
+    private void resetFlight()
+    {
+        flightCoolDown = true;
+    }
+
+
+
+
+    //Create Abilities
+    private void spawnFireBall()
     {
         Instantiate(fireBallPrefab, this.transform.position, this.transform.rotation);
     }
@@ -189,6 +235,8 @@ public class PlayerController : MonoBehaviour
     {
         //Instantiate(summonPrefab, summonposition, this.transform.rotation);
     }
+
+
 
     private void RotateTowardCamera()
     {
