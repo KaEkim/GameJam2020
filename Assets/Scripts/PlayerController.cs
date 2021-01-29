@@ -19,10 +19,11 @@ public class PlayerController : MonoBehaviour
     public GameObject fireBallPrefab;
     public GameObject shieldPrefab;
 
-    public float fireCoolDown = 0;
+    private bool fireCoolDown = true;
+    private bool shieldCoolDown = true;
 
     public bool hasFireGem = true;
-    public bool hasshieldGem = true;
+    public bool hasShieldGem = true;
 
 
     // Start is called before the first frame update
@@ -40,7 +41,7 @@ public class PlayerController : MonoBehaviour
 
 
         ////SpawnsFireBall    
-        if (hasFireGem && fireCoolDown <=0)
+        if (hasFireGem && fireCoolDown)
         {
             //ChargesFireBall
             if (Input.GetKey(KeyCode.E))
@@ -50,16 +51,21 @@ public class PlayerController : MonoBehaviour
             //LaunchFireballFunction
             if (Input.GetKeyUp(KeyCode.E))
             {
+                fireCoolDown = false;
                 spawnFireBall(fireBallCharge);
+                Invoke("resetFire", 10);
             }
         }
 
 
 
         //LaunchShield
-        if (Input.GetKey(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.V) && shieldCoolDown && hasShieldGem && !GameObject.FindGameObjectWithTag("Shield"))
         {
+            print("shield");
+            shieldCoolDown = false;
             spawnShield();
+            Invoke("resetShield", 10);
         }
 
 
@@ -121,6 +127,16 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    private void resetShield()
+    {
+        shieldCoolDown = true;
+    }
+    private void resetFire()
+    {
+        fireCoolDown = true;
+    }
+
 
     private void spawnFireBall(int multiplier)
     {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4701355063813562534}
   - component: {fileID: 4701355063813562521}
   - component: {fileID: 4701355063813562532}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerEmpty
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -78,10 +78,10 @@ MonoBehaviour:
   target: {fileID: 4701355064521319555}
   fireBallPrefab: {fileID: 7163778720730634895, guid: 4139e038383530848bb4cd2436a2bfdc,
     type: 3}
-  shieldPrefab: {fileID: 0}
-  fireCoolDown: 0
+  shieldPrefab: {fileID: 4825096316551860635, guid: 20e231ab8b7b9c44daecf23c1d40669a,
+    type: 3}
   hasFireGem: 1
-  hasshieldGem: 1
+  hasShieldGem: 1
 --- !u!1 &4701355064015531329
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +523,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5245007293537365487}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 790.6274, y: -383.96466, z: 330.82904}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4701355063813562535}

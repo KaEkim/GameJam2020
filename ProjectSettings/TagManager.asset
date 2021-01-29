@@ -5,15 +5,16 @@ TagManager:
   serializedVersion: 2
   tags:
   - explosion
+  - Shield
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - Player
-  - 
+  - Shield
   - PostProcessing
   - 
   - 
