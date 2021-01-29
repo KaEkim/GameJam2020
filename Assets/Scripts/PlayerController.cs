@@ -61,7 +61,6 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 
-
         ////SpawnsFireBall    
         if (hasFireGem && fireCoolDown)
         {
@@ -80,7 +79,7 @@ public class PlayerController : MonoBehaviour
 
 
         //LaunchShield
-        if (Input.GetKey(KeyCode.V))
+        if (Input.GetKey(KeyCode.V) && hasShieldGem && !GameObject.FindGameObjectWithTag("Shield"))
         {
             spawnShield();
         }

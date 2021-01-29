@@ -6,14 +6,14 @@ public class ShieldController : MonoBehaviour
 {
 
     private bool following = true;
-    private float shieldGrowRate = .2f;
-    public int maxScale = 2;
-    public GameObject player;
+    private float growRate = .2f;
+    private int maxScale = 7;
+    private GameObject player;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     // Update is called once per frame
@@ -27,21 +27,18 @@ public class ShieldController : MonoBehaviour
         else following = false;
 
 
-        if (following)
-        {
-            //calculates absolute value between player and shield, then moves it 
-            Vector3 absoluteDistance = new Vector3(Mathf.Abs(this.transform.position.x - player.transform.position.x), Mathf.Abs(this.transform.position.y - player.transform.position.y), Mathf.Abs(this.transform.position.z - player.transform.position.z));
-            this.transform.position -= absoluteDistance/2;
-        }
-
         //scale until it hits the proper size
         if(this.transform.localScale.x < maxScale)
         {
-            this.transform.localScale += new Vector3(shieldGrowRate, shieldGrowRate, shieldGrowRate);
+            this.transform.localScale += new Vector3(growRate, growRate, growRate);
         }
-
-
-
-
+    }
+    private void FixedUpdate()
+    {
+        if (following)
+        {
+            Vector3 absoluteDistance = new Vector3(Mathf.Abs(this.transform.position.x - player.transform.position.x), Mathf.Abs(this.transform.position.y - player.transform.position.y), Mathf.Abs(this.transform.position.z - player.transform.position.z));
+            this.transform.position -= absoluteDistance / 5;
+        }
     }
 }
