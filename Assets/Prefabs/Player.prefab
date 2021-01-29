@@ -75,13 +75,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32ac6ed2b424f1545bb738db34658e58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightningYOffset: 10
+  cam: {fileID: 4701355064929700973}
   target: {fileID: 4701355064521319555}
   fireBallPrefab: {fileID: 7163778720730634895, guid: 4139e038383530848bb4cd2436a2bfdc,
     type: 3}
   shieldPrefab: {fileID: 4825096316551860635, guid: 20e231ab8b7b9c44daecf23c1d40669a,
     type: 3}
+  lightningPrefab: {fileID: 0}
+  summonPrefab: {fileID: 0}
+  flightPrefab: {fileID: 0}
+  fireCoolDown: 1
+  shieldCoolDown: 1
+  lightningCoolDown: 1
+  summonCoolDown: 1
+  flightCoolDown: 1
   hasFireGem: 1
   hasShieldGem: 1
+  hasLightningGem: 1
+  hasSummonGem: 1
+  hasFlightGem: 1
 --- !u!1 &4701355064015531329
 GameObject:
   m_ObjectHideFlags: 0
