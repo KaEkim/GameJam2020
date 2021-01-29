@@ -14,16 +14,37 @@ public class PlayerController : MonoBehaviour
     int spinY = 1;
     float rotationAmount = 0;
     public static int fireBallCharge = 0;
+    public int lightningYOffset = 10;
+
+    public Camera cam;
 
     public Transform target;
+
+    //Prefabs
+    [Header("Prefabs")]
     public GameObject fireBallPrefab;
     public GameObject shieldPrefab;
+    public GameObject lightningPrefab;
+    public GameObject summonPrefab;
+    public GameObject flightPrefab;
 
-    private bool fireCoolDown = true;
-    private bool shieldCoolDown = true;
 
+    //cooldowns
+    [Header("CoolDowns")]
+    public bool fireCoolDown = true;
+    public bool shieldCoolDown = true;
+    public bool lightningCoolDown = true;
+    public bool summonCoolDown = true;
+    public bool flightCoolDown = true;
+
+
+    //Gem States
+    [Header("Gem States")]
     public bool hasFireGem = true;
     public bool hasShieldGem = true;
+    public bool hasLightningGem = true;
+    public bool hasSummonGem = true;
+    public bool hasFlightGem = true;
 
 
     // Start is called before the first frame update
@@ -31,6 +52,7 @@ public class PlayerController : MonoBehaviour
     {
 
         Screen.lockCursor = true;
+        Cursor.visible = true;
         rb = GetComponent<Rigidbody>();
 
     }
@@ -51,21 +73,42 @@ public class PlayerController : MonoBehaviour
             //LaunchFireballFunction
             if (Input.GetKeyUp(KeyCode.E))
             {
-                fireCoolDown = false;
                 spawnFireBall(fireBallCharge);
-                Invoke("resetFire", 10);
             }
         }
 
 
 
         //LaunchShield
-        if (Input.GetKeyDown(KeyCode.V) && shieldCoolDown && hasShieldGem && !GameObject.FindGameObjectWithTag("Shield"))
+        if (Input.GetKey(KeyCode.V))
         {
-            print("shield");
-            shieldCoolDown = false;
             spawnShield();
-            Invoke("resetShield", 10);
+        }
+
+
+        // launch lightning
+        if (Input.GetKey(KeyCode.R))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if(Physics.Raycast(ray, out hit))
+            {
+                
+                var spawnLocation = hit.point;
+                Debug.DrawLine(cam.ScreenToWorldPoint(Input.mousePosition), spawnLocation, Color.green, 4);
+                spawnLocation = new Vector3(spawnLocation.x, spawnLocation.y + lightningYOffset, spawnLocation.z);      
+
+                spawnLightning(spawnLocation);
+                
+            }
+        }
+
+
+        // summon golem dog
+        if (Input.GetKey(KeyCode.Q))
+        {
+
         }
 
 
@@ -128,16 +171,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void resetShield()
-    {
-        shieldCoolDown = true;
-    }
-    private void resetFire()
-    {
-        fireCoolDown = true;
-    }
-
-
     private void spawnFireBall(int multiplier)
     {
         Instantiate(fireBallPrefab, this.transform.position, this.transform.rotation);
@@ -146,6 +179,16 @@ public class PlayerController : MonoBehaviour
     private void spawnShield()
     {
         Instantiate(shieldPrefab, this.transform.position, this.transform.rotation);
+    }
+
+    private void spawnLightning(Vector3 spawn)
+    {
+        Instantiate(lightningPrefab, spawn, new Quaternion());
+    }
+
+    private void spawnGolem()
+    {
+        //Instantiate(summonPrefab, summonposition, this.transform.rotation);
     }
 
     private void RotateTowardCamera()

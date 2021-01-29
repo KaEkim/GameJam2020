@@ -6,6 +6,7 @@ TagManager:
   tags:
   - explosion
   - Shield
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -9,6 +9,7 @@ public class FireBallExplosion : MonoBehaviour
     private int charge;
     private float explodeTime = .4f;
 
+    AIController aiScript;
 
     // Start is called before the first frame update
     void Start()
@@ -27,11 +28,31 @@ public class FireBallExplosion : MonoBehaviour
     void Update()
     {
         this.transform.localScale += scaleChange;
+        if (checkDistToEnemies())
+        {
+            
+            if (aiScript) aiScript.takeDamage(50);
+        }
     }
 
     private void destroy()
     {
         PlayerController.fireBallCharge = 0;
         Destroy(this.gameObject);
+    }    
+
+    public bool checkDistToEnemies()
+    {
+        var objects = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var obj in objects)
+        {
+            float dist = Vector3.Distance(transform.position, obj.transform.position);
+            if (dist <= -20)
+            {
+                aiScript = obj.transform.GetComponent<AIController>();
+                return true;
+            }            
+        }
+        return false;
     }
 }

@@ -8,14 +8,17 @@ public class AIController : MonoBehaviour
     NavMeshAgent agent;
 
     // points of interest where the enemy will go
+    [Header("POI")]
     public GameObject player;
-    public GameObject centerOfMap;    
-    
+    public GameObject centerOfMap;
+
     // speed and sight
+    [Header("Speed & Sight")]
     public float speed;
     public float sightRange = 5;
 
     // State machine
+    [Header("State Machine")]
     //general movement
     public bool isIdling = true;
     public bool isWalking = false;
@@ -27,19 +30,25 @@ public class AIController : MonoBehaviour
     private bool hasGems = false;
 
     // health
+    [Header("Health")]
     public bool isDead = false;
     public float health = 100;
+    public float iframes = 0;
+    public float iframesReset = 300;
 
     // attacking 
+    [Header("Attacking Vars")]
     public float damage = 34;
     public float attackTimer = 0;
-    public float attackRadius = 5;   
+    public float attackRadius = 5;
 
     //idling
+    [Header("Idle Vars")]
     public float idleTimer = 0;
     public float defaultIdleTimer = 300;
 
     //random point
+    [Header("Random Point")]
     private Vector3 randomPoint = new Vector3();
     public float maxDistance = 70;
     private float walkTimer = 0;
@@ -58,6 +67,9 @@ public class AIController : MonoBehaviour
     {
         stateManagement();
         stateActions();
+
+        if (iframes <= 0) iframes = 0;
+        iframes--;
     }         
     
     void stateManagement()
@@ -171,6 +183,7 @@ public class AIController : MonoBehaviour
             //drop gems
         }
     }
+    
 
     float checkDistanceToPlayer()
     {
@@ -191,5 +204,26 @@ public class AIController : MonoBehaviour
         float dist = Vector3.Distance(point, transform.position);
         //print(dist);
         return dist;
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        print("hit");        
+        if (collision.gameObject.CompareTag("explosion"))
+        {
+            print("booom");
+            takeDamage(50);
+        }
+    }
+
+
+    public void takeDamage(int damage)
+    {
+        if (iframes <= 0)
+        {
+            health -= damage;
+            iframes = iframesReset;
+        }
     }
 }
