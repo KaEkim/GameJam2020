@@ -12,12 +12,22 @@ public class FollowPlayer : MonoBehaviour
     float spinX = 3;
     private float rotationAmountX = 0;
     private float rotationAmountY = 0;
+
     public static float actualMoveX = 0;
     public static float actualMoveY = 0;
+    
     private float targetPitch;
     private float targetYaw;
     private float pitch;
     private float yaw;
+
+    float dollyDis = 10;
+    float targetDollyDis = 10;
+
+    public float mouseSensitivityY;
+    public float mouseSensitivityX;
+
+    public float mouseScrollMultiplier = 5;
 
 
     // Start is called before the first frame update
@@ -61,15 +71,28 @@ public class FollowPlayer : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y");
         float mouseX = Input.GetAxis("Mouse X");
 
-        //targetPitch += mouseY * mouseSensitivityY;
-        //targetYaw += mouseX * mouseSensitivityX;
+        targetPitch += mouseY * mouseSensitivityY;
+        targetYaw += mouseX * mouseSensitivityX;
+
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+        targetDollyDis += scroll * mouseScrollMultiplier;
+        targetDollyDis = Mathf.Clamp(targetDollyDis, 2.5f, 15);
 
 
+        dollyDis = AnimMath.Slide(dollyDis, targetDollyDis, .05f); // EASE
+        //target.transform.position = new Vector3(0, 0, -dollyDis);
 
 
+        // Changing the rotation to match the pitch variable
 
+        targetPitch = Mathf.Clamp(targetPitch, -30, 25);
 
+        pitch = AnimMath.Slide(pitch, targetPitch, .01f); //EASE
+        yaw = AnimMath.Slide(yaw, targetYaw, .01f); //EASE
 
+        // Quaternion targetRotation
+        transform.rotation = Quaternion.Euler(-pitch, yaw, 0);
+        //transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.01f); // Could use .Slerp
 
 
 
