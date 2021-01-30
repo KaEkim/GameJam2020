@@ -7,7 +7,7 @@ public class FireBallExplosion : MonoBehaviour
 
     private Vector3 scaleChange;
     private int charge;
-    private float explodeTime = .4f;
+    private float explodeTime = 1.5f;
 
     AIController aiScript;
 
@@ -28,11 +28,7 @@ public class FireBallExplosion : MonoBehaviour
     void Update()
     {
         this.transform.localScale += scaleChange;
-        if (checkDistToEnemies())
-        {
-            
-            if (aiScript) aiScript.takeDamage(50);
-        }
+        
     }
 
     private void destroy()

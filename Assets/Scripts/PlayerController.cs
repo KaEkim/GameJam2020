@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     int spinY = 1;
     float rotationAmount = 0;
     public static int fireBallCharge = 0;
-    public int lightningYOffset = 10;
+    public static int lightningYOffset = 10;
 
     public Camera cam;
 
@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
     [Header("CoolDowns")]
     public bool fireCoolDown = true;
     public bool shieldCoolDown = true;
-    public bool lightningCoolDown = true;
+    public static bool lightningCoolDown = true;
     public bool summonCoolDown = true;
     public bool flightCoolDown = true;
 
@@ -96,7 +96,8 @@ public class PlayerController : MonoBehaviour
 
 
         // launch lightning
-        if (Input.GetKey(KeyCode.R))
+        
+        if (Input.GetKey(KeyCode.R) && hasLightningGem && lightningCoolDown)
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -109,6 +110,8 @@ public class PlayerController : MonoBehaviour
                 spawnLocation = new Vector3(spawnLocation.x, spawnLocation.y + lightningYOffset, spawnLocation.z);      
 
                 spawnLightning(spawnLocation);
+
+                lightningCoolDown = false;
                 
             }
         }

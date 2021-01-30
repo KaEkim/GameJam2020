@@ -7,6 +7,8 @@ TagManager:
   - explosion
   - Shield
   - Enemy
+  - Cloud
+  - LightningBolt
   layers:
   - Default
   - TransparentFX
