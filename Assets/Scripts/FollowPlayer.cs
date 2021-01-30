@@ -7,13 +7,17 @@ public class FollowPlayer : MonoBehaviour
 
     public Transform target;
     Vector3 offset;
-    float SmoothTime = .13f;
     Vector3 velocity = Vector3.zero;
-    float spinY = 50;
-    private float rotationAmount = 0;
-    public static float actualMove = 0;
-
-
+    float spinY = 1.5f;
+    float spinX = 3;
+    private float rotationAmountX = 0;
+    private float rotationAmountY = 0;
+    public static float actualMoveX = 0;
+    public static float actualMoveY = 0;
+    private float targetPitch;
+    private float targetYaw;
+    private float pitch;
+    private float yaw;
 
 
     // Start is called before the first frame update
@@ -22,31 +26,52 @@ public class FollowPlayer : MonoBehaviour
         offset = transform.position - target.position;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //Vector3 direction = (target.position + offset);
-        //transform.position = Vector3.SmoothDamp(transform.position, direction, ref velocity, SmoothTime);
-        //transform.rotation = target.transform.rotation;
-    }
-
     private void FixedUpdate()
     {
-
         Vector3 direction = (target.position + offset);
-        transform.position = Vector3.SmoothDamp(transform.position, direction, ref velocity, SmoothTime);
+        
+        transform.position = Vector3.SmoothDamp(transform.position, direction, ref velocity, 0);
         //transform.rotation = target.transform.rotation;
 
-        float h = spinY * Input.GetAxis("Mouse X") * Time.deltaTime;
+        //float h = spinX * Input.GetAxis("Mouse X") * Time.deltaTime;
+        //float v = spinY * Input.GetAxis("Mouse Y") * Time.deltaTime;
 
-        rotationAmount += h;
+        //rotationAmountX += h;
+        //rotationAmountY += v;
 
         //float v = spinY * Input.GetAxis("Mouse Y");
-        actualMove = rotationAmount / 2;
+        //actualMoveX = rotationAmountX / 2;
+        //actualMoveY = rotationAmountY / 2;
 
-        transform.Rotate(0, actualMove, 0);
+        //if (actualMoveY < -89) actualMoveY = -88;
+        //if (actualMoveY > 89) actualMoveY = 88;
 
-        rotationAmount = actualMove;
+        //transform.rotation = new Quaternion(-actualMoveY, actualMoveX, 0, transform.rotation.w);
+
+        //rotationAmountX = actualMoveX;
+        //rotationAmountY = actualMoveY;
+
+        ///////////////
+
+        //transform.RotateAround(target.transform.position, Vector3.up, Input.GetAxis("Mouse X") * spinX);
+        //transform.RotateAround(target.transform.position, new Vector3(1,0,0), Input.GetAxis("Mouse Y") * spinY);
+        //transform.rotation = new Quaternion(this.transform.rotation.x, this.transform.rotation.y, 0, this.transform.rotation.w);
+
+
+        float mouseY = Input.GetAxis("Mouse Y");
+        float mouseX = Input.GetAxis("Mouse X");
+
+        //targetPitch += mouseY * mouseSensitivityY;
+        //targetYaw += mouseX * mouseSensitivityX;
+
+
+
+
+
+
+
+
+
 
     }
 

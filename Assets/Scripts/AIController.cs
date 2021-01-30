@@ -211,7 +211,7 @@ public class AIController : MonoBehaviour
         print("hit");        
         if (collision.gameObject.CompareTag("explosion"))
         {
-            print("booom");
+            //print("booom");
             takeDamage(50);
         }
     }
