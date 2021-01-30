@@ -85,7 +85,7 @@ public class FollowPlayer : MonoBehaviour
 
         // Changing the rotation to match the pitch variable
 
-        targetPitch = Mathf.Clamp(targetPitch, -30, 25);
+        targetPitch = Mathf.Clamp(targetPitch, -50, 25);
 
         pitch = AnimMath.Slide(pitch, targetPitch, .01f); //EASE
         yaw = AnimMath.Slide(yaw, targetYaw, .01f); //EASE
