@@ -8,6 +8,8 @@ TagManager:
   - Shield
   - Enemy
   - Ground
+  - Cloud
+  - LightningBolt
   layers:
   - Default
   - TransparentFX

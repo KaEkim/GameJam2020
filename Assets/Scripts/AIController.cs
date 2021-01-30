@@ -69,7 +69,7 @@ public class AIController : MonoBehaviour
         stateActions();
 
         if (iframes <= 0) iframes = 0;
-        iframes--;
+        iframes -= Time.deltaTime;
     }         
     
     void stateManagement()
@@ -209,19 +209,28 @@ public class AIController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         print("hit");        
-        if (collision.gameObject.CompareTag("explosion"))
+        
+        if (collision.gameObject.CompareTag("LightningBolt"))
         {
-            //print("booom");
-            takeDamage(50);
+            takeDamage(50, iframesReset);
         }
     }
 
-    public void takeDamage(int damage)
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("explosion"))
+        {
+            print("booom");
+            takeDamage(1, 0);
+        }
+    }
+
+    public void takeDamage(int damage, float iFRMS)
     {
         if (iframes <= 0)
         {
             health -= damage;
-            iframes = iframesReset;
+            iframes = iFRMS;
         }
     }
 }
