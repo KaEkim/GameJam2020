@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour
 
     bool isGrounded = false;
 
+    public float spawnRadius = 5f;
+    public float dogRadius = 5f;
+
     public Camera cam;
 
     public Transform target;
@@ -29,20 +32,20 @@ public class PlayerController : MonoBehaviour
 
     //cooldowns
     [Header("CoolDowns")]
-    public bool fireCoolDown = true;
-    public bool shieldCoolDown = true;
-    public static bool lightningCoolDown = true;
-    public bool summonCoolDown = true;
-    public bool flightCoolDown = true;
+    public static bool fireCoolDown = true;
+    public static bool shieldCoolDown = true;
+    public static  bool lightningCoolDown = true;
+    public static bool summonCoolDown = true;
+    public static bool flightCoolDown = true;
 
 
     //Gem States
     [Header("Gem States")]
-    public bool hasFireGem = true;
-    public bool hasShieldGem = true;
-    public bool hasLightningGem = true;
-    public bool hasSummonGem = true;
-    public bool hasFlightGem = true;
+    public static bool hasFireGem = true;
+    public static bool hasShieldGem = true;
+    public static bool hasLightningGem = true;
+    public static bool hasSummonGem = true;
+    public static bool hasFlightGem = true;
 
     //Reset Booleans
     [Header("Reset Booleans")]
@@ -118,9 +121,10 @@ public class PlayerController : MonoBehaviour
 
 
         // summon golem dog
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKey(KeyCode.Q) && hasSummonGem && summonCoolDown)
         {
-
+            summonCoolDown = false;
+            spawnGolem();
         }
 
             //Incase you need this @Jacob to edit the times of cooldowns
@@ -279,7 +283,14 @@ public class PlayerController : MonoBehaviour
 
     private void spawnGolem()
     {
-        //Instantiate(summonPrefab, summonposition, this.transform.rotation);
+        bool hasPickedPoint = false;
+        Vector3 spawn = transform.position;
+        spawn = pickPointInRadius();
+        RaycastHit hit;
+        if (Physics.Raycast(spawn + new Vector3(0, 10f, 0), Vector3.down, out hit, 200f))
+        {
+            Instantiate(summonPrefab, new Vector3(spawn.x, hit.point.y + 1f, spawn.z), this.transform.rotation);
+        }        
     }
 
     private void RotateForward(string directionLooking)
@@ -373,5 +384,14 @@ public class PlayerController : MonoBehaviour
             transform.rotation = new Quaternion(0, angleSize.y, 0, angleSize.w);
 
         }
+    }
+
+    private Vector3 pickPointInRadius()
+    {
+        Vector3 originPoint = transform.position;
+        originPoint.x += Random.Range(-spawnRadius, spawnRadius);
+        originPoint.y += 1f;
+        originPoint.z += Random.Range(-spawnRadius, spawnRadius);
+        return originPoint;
     }
 }
