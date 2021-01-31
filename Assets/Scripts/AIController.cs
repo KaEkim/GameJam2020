@@ -20,9 +20,9 @@ public class AIController : MonoBehaviour
     // State machine
     [Header("State Machine")]
     //general movement
-    public bool isIdling = true;
-    public bool isWalking = false;
-    public bool isAttacking = false;
+    public static bool isIdling = true;
+    public static bool isWalking = false;
+    public static bool isAttacking = false;
     //special states
     public bool isGoingTowardsCenter = false;
     public bool isUsingGem = false;
