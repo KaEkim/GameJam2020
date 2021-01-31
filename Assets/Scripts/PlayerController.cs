@@ -492,7 +492,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private Vector3 pickPointInRadius()
+    public Vector3 pickPointInRadius()
     {
         Vector3 originPoint = transform.position;
         originPoint.x += Random.Range(-spawnRadius, spawnRadius);

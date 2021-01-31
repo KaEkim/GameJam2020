@@ -1854,7 +1854,7 @@ PrefabInstance:
     - target: {fileID: 4701355063813562532, guid: 2752a858c90e9fe4fb36f7c39000b5a2,
         type: 3}
       propertyPath: spawnRadius
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4701355063813562532, guid: 2752a858c90e9fe4fb36f7c39000b5a2,
         type: 3}
@@ -2620,6 +2620,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 5019266850630368625, guid: bd891dbcb5c9dcf4c9c4408d9dcaf17d,
+        type: 3}
+      propertyPath: iframesReset
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd891dbcb5c9dcf4c9c4408d9dcaf17d, type: 3}
 --- !u!1001 &6978101556683964340
@@ -2633,6 +2638,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Dog
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978101555324009617, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
+        type: 3}
+      propertyPath: sightRange
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978101555324009617, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
+        type: 3}
+      propertyPath: respawnTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978101555324009617, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
+        type: 3}
+      propertyPath: attackRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978101555324009617, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
+        type: 3}
+      propertyPath: defaultIdleTimer
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978101555324009617, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
+        type: 3}
+      propertyPath: respawnTimeReset
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6978101555324009629, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
         type: 3}
@@ -2688,6 +2718,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978101555324009630, guid: 6a8a9c3d985826643a4de98f1f98fa6c,
+        type: 3}
+      propertyPath: m_Speed
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6a8a9c3d985826643a4de98f1f98fa6c, type: 3}

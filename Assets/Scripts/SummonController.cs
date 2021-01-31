@@ -43,12 +43,14 @@ public class SummonController : MonoBehaviour
     public float attackTimer = 0;
     public float attackTimerReset = 5;
     public float attackRadius = 5;
-    public static GameObject targetEnemy;
-    private bool hasTarget = false;
+    public GameObject targetEnemy;
+    public bool hasTarget = false;
     public GameObject attackPrefab;
     public GameObject rockFollow;
     public float rockFollowOffset = 5;
     public float spawnRadius = 5f;
+    public float respawnTime = 0;
+    public float respawnTimeReset = 5f;
     public GameObject[] rocks;
     public int totalRocks = 0;
 
@@ -80,24 +82,33 @@ public class SummonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         //print("isworkignsdafsdfasadfdsaa~!");
         stateManagement();
         stateActions();
+
+        if (timer <= 0) timer = 0;
+        if (respawnTime <= 0) respawnTime = 0;
         timer -= Time.deltaTime;
+        respawnTime -= Time.deltaTime;
+        
         //print(timer);
         rocks = GameObject.FindGameObjectsWithTag("Rock");
 
         if (iframes <= 0) iframes = 0;
         iframes -= Time.deltaTime;
 
-        if (hasTarget && attackTimer >= 0)
+        if (hasTarget && attackTimer <= 0 && respawnTime <=0)
         {            
-            getClosestRock(GameObject.FindGameObjectsWithTag("Rock")).SendMessage("goTowardsEnemy", SendMessageOptions.DontRequireReceiver);
+            getClosestRock(GameObject.FindGameObjectsWithTag("Rock")).SendMessage("goTowardsEnemy",targetEnemy, SendMessageOptions.DontRequireReceiver);
+            Destroy(getClosestRockFollow(GameObject.FindGameObjectsWithTag("RockFollow")));
             totalRocks--;
+            attackTimer = attackTimerReset;
         }
-
-        attackTimer -= Time.deltaTime;
+        //timer for rock spawning time, when spawning rocks set it, then only do the attack if spawn timer is less than 0
+        
         if (attackTimer <= 0) attackTimer = 0;
+        attackTimer -= Time.deltaTime;
 
 
         if (spawn) spawnRock();
@@ -105,6 +116,12 @@ public class SummonController : MonoBehaviour
 
     void stateManagement()
     {
+        if (targetEnemy == null)
+        {
+            targetEnemy = null;
+            hasTarget = false;
+            checkDistanceToEnemies();
+        }
         // isSpawning to idle
         if (isSpawning && timer <= 0)
         {
@@ -123,7 +140,7 @@ public class SummonController : MonoBehaviour
                 isWalking = false;
             }
         //}
-        print(GameObject.FindGameObjectsWithTag("Rock"));
+        //print(GameObject.FindGameObjectsWithTag("Rock"));
 
         // attacking to idle
         if (isAttacking && totalRocks > 0)
@@ -137,7 +154,8 @@ public class SummonController : MonoBehaviour
         {
             isWalking = true;
             isIdling = false;
-            randomPoint = Random.insideUnitSphere * maxDistance;
+            randomPoint = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().pickPointInRadius();
+            //randomPoint = Random.insideUnitSphere * maxDistance;
             agent.destination = randomPoint;
             walkTimer = defaultWalkTimer;
         }
@@ -163,6 +181,7 @@ public class SummonController : MonoBehaviour
             Invoke("spawnRock", 0.75f);
             Invoke("spawnRock", 1.0f);
             totalRocks = 4;
+            respawnTime = respawnTimeReset;
             /*if (checkDistanceToPoint(targetEnemy.transform.position) < attackRadius && attackTimer <= 0)
             {
                 attackTimer = 120;                
@@ -256,10 +275,33 @@ public class SummonController : MonoBehaviour
         return originPoint;
     }
 
+    public void subtractARock()
+    {
+        totalRocks--;
+    }
+
     private GameObject getClosestRock(GameObject[] points)
     {
         GameObject tMin = null;
-        float minDist = 10f;
+        float minDist = Mathf.Infinity;
+        Vector3 currentpos = transform.position;
+        foreach (GameObject t in points)
+        {
+            float dist = Vector3.Distance(t.transform.position, currentpos);
+            if (dist < minDist)
+            {
+                tMin = t;
+                minDist = dist;
+            }
+        }
+
+        return tMin;
+    }
+
+    private GameObject getClosestRockFollow(GameObject[] points)
+    {
+        GameObject tMin = null;
+        float minDist = Mathf.Infinity;
         Vector3 currentpos = transform.position;
         foreach (GameObject t in points)
         {

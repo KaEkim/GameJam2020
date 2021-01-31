@@ -248,6 +248,11 @@ public class AIController : MonoBehaviour
         {
             takeDamage(50, iframesReset);
         }
+        if (collision.gameObject.CompareTag("Rock"))
+        {
+            print("taken Damage");
+            takeDamage(25, iframesReset);
+        }
     }
 
     private void OnCollisionStay(Collision collision)
