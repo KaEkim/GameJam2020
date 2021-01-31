@@ -74,7 +74,7 @@ public class RockAttack : MonoBehaviour
             dog.gameObject.SendMessage("subtractARock", SendMessageOptions.DontRequireReceiver);
             
             Invoke("destroy", 0);
-        }
+        }  
 
 
     }

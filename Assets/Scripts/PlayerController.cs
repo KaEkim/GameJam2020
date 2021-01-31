@@ -22,6 +22,17 @@ public class PlayerController : MonoBehaviour
     public Transform target;
     private bool isFlying = false;
 
+    [Header("Health")]
+    public bool isDead = false;
+    public float health = 100;
+    public float iframes = 0;
+    public float iframesReset = 5;
+
+    [Header("Attacking Vars")]
+    public float damage = 34;
+    public float attackTimer = 0;
+    public float attackRadius = 5;
+
     //Prefabs
     [Header("Prefabs")]
     public GameObject fireBallPrefab;
@@ -68,6 +79,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (iframes <= 0) iframes = 0;
+        iframes -= Time.deltaTime;
+        if (attackTimer <= 0) attackTimer = 0;
+        attackTimer -= Time.deltaTime;
 
         ////SpawnsFireBall    
         if (hasFireGem && fireCoolDown)
@@ -251,7 +266,23 @@ public class PlayerController : MonoBehaviour
                 RotateForward("d");
             }
         }
+        if (Input.GetMouseButtonDown(0) && attackTimer <= 0)
+        {
+            GameObject[] eList = GameObject.FindGameObjectsWithTag("Enemy");
+            foreach(GameObject e in eList)
+            {      
+                
+                
 
+                if(checkDistanceToPoint(e.transform.position) <= attackRadius)
+                {
+                    e.GetComponent<AIController>().takeDamage(100, 5);
+                }
+            }
+            attackTimer = 2;
+            
+            
+        }
     }
 
 
@@ -290,7 +321,7 @@ public class PlayerController : MonoBehaviour
     {
         lightningCoolDown = true;
     }
-    private void resetSummon()
+    public void resetSummon()
     {
         summonCoolDown = true;
     }
@@ -492,6 +523,15 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public void takeDamage(int damage, float IFRMS)
+    {
+        if(iframes <= 0)
+        {
+            health -= damage;
+            iframes = IFRMS;
+        }
+    }
+
     public Vector3 pickPointInRadius()
     {
         Vector3 originPoint = transform.position;
@@ -499,6 +539,18 @@ public class PlayerController : MonoBehaviour
         originPoint.y += 1f;
         originPoint.z += Random.Range(-spawnRadius, spawnRadius);
         return originPoint;
+    }
+
+    float checkDistanceToPoint(Vector3 point)
+    {
+        float dist = Vector3.Distance(point, transform.position);
+        //print(dist);
+        return dist;
+    }
+
+    public float checkProjection(Vector2 a, Vector2 b)
+    {
+        return Vector2.Dot(a.normalized, b.normalized);
     }
 
 }

@@ -170,6 +170,29 @@ public class SummonController : MonoBehaviour
                 idleTimer = defaultIdleTimer;
             }
         }
+
+        if(health <= 0)
+        {
+
+            destroy();
+        }
+        
+    }
+
+    private void destroy()
+    {
+        player.GetComponent<PlayerController>().Invoke("resetSummon", 5);
+        GameObject[] rocks = GameObject.FindGameObjectsWithTag("Rock");
+        foreach (GameObject r in rocks)
+        {
+            Destroy(r);
+        }
+        GameObject[] followPoints = GameObject.FindGameObjectsWithTag("RockFollow");
+        foreach (GameObject f in followPoints)
+        {
+            Destroy(f);
+        }
+        Destroy(this.gameObject);
     }
 
     void stateActions()

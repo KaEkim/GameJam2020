@@ -10,6 +10,7 @@ public class AIController : MonoBehaviour
     // points of interest where the enemy will go
     [Header("POI")]
     public GameObject player;
+    public GameObject target;
     public GameObject centerOfMap;
 
     // speed and sight
@@ -35,6 +36,7 @@ public class AIController : MonoBehaviour
     public float health = 100;
     public float iframes = 0;
     public float iframesReset = 300;
+    public float maxRenderDistance = 300;
 
     // attacking 
     [Header("Attacking Vars")]
@@ -62,7 +64,7 @@ public class AIController : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        agent =  GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
         idleTimer = defaultIdleTimer;
     }
 
@@ -83,141 +85,180 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            
+
             if (doOnce)
             {
                 currPos = transform.position;
                 currRot = transform.rotation;
                 //agent.destination = this.transform.position;
                 doOnce = true;
-                
+
             }
             agent.updateRotation = false;
             agent.updatePosition = false;
-            this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll; 
+            this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             //this.transform.position = currPos;
             //this.transform.rotation = currRot;
             agent.destination = transform.position;
-            
+
         }
     }
-    
+
     void stateManagement()
     {
-            if (!hasGems)
+        target = getTarget();
+        if (!hasGems)
+        {
+            // idle/walking to attacking
+            if (checkDistanceToPoint(target.transform.position) <= sightRange)
             {
-                // idle/walking to attacking
-                if (checkDistanceToPlayer() < sightRange)
+                isAttacking = true;
+                isIdling = false;
+                isWalking = false;
+            }
+            // attacking to idle
+            if (checkDistanceToPlayer() > sightRange && isAttacking)
+            {
+                isAttacking = false;
+                isIdling = true;
+                idleTimer = defaultIdleTimer;
+            }
+            // idle to walking
+            if (idleTimer <= 0 && !isAttacking && isIdling)
+            {
+                isWalking = true;
+                isIdling = false;
+                randomPoint = Random.insideUnitSphere * maxDistance;
+                agent.destination = randomPoint;
+                walkTimer = defaultWalkTimer;
+            }
+            // walking to idle
+            if (checkDistanceToPoint(randomPoint) <= 5 || walkTimer <= 0)
+            {
+                if (isWalking)
                 {
-                    isAttacking = true;
-                    isIdling = false;
+                    agent.destination = transform.position;
                     isWalking = false;
-                }
-                // attacking to idle
-                if (checkDistanceToPlayer() > sightRange && isAttacking)
-                {
-                    isAttacking = false;
                     isIdling = true;
                     idleTimer = defaultIdleTimer;
                 }
-                // idle to walking
-                if (idleTimer <= 0 && !isAttacking && isIdling)
-                {
-                    isWalking = true;
-                    isIdling = false;
-                    randomPoint = Random.insideUnitSphere * maxDistance;
-                    agent.destination = randomPoint;
-                    walkTimer = defaultWalkTimer;
-                }
-                // walking to idle
-                if (checkDistanceToPoint(randomPoint) <= 5 || walkTimer <= 0)
-                {
-                    if (isWalking)
-                    {
-                        agent.destination = transform.position;
-                        isWalking = false;
-                        isIdling = true;
-                        idleTimer = defaultIdleTimer;
-                    }
-                }
             }
-            if (hasGems)
+            if (checkDistanceToPlayer() >= maxRenderDistance)
             {
-                if (hasKilledPlayer)
-                {
-                    isAttacking = false;
-                    isWalking = false;
-                    isGoingTowardsCenter = true;
-                }
-                if (checkDistanceToCenter() <= 5 && isGoingTowardsCenter)
-                {
-                    isGoingTowardsCenter = false;
-                    hasKilledPlayer = false;
-                    isIdling = true;
-                }
-                if (checkDistanceToPlayer() <= 10)
-                {
-                    isGoingTowardsCenter = false;
-                    isIdling = false;
-                    isUsingGem = true;
-                }
+                destroy();
             }
+        }
+        if (hasGems)
+        {
+            if (hasKilledPlayer)
+            {
+                isAttacking = false;
+                isWalking = false;
+                isGoingTowardsCenter = true;
+            }
+            if (checkDistanceToCenter() <= 5 && isGoingTowardsCenter)
+            {
+                isGoingTowardsCenter = false;
+                hasKilledPlayer = false;
+                isIdling = true;
+            }
+            if (checkDistanceToPlayer() <= 10)
+            {
+                isGoingTowardsCenter = false;
+                isIdling = false;
+                isUsingGem = true;
+            }
+        }
+
+        if (health <= 0)
+        {
+            destroy();
+        }
         
+        
+    }
+
+    private void destroy()
+    {
+        this.GetComponentInParent<EnemySpawner>().currEnemiesInSpawner--;
+        Destroy(this.gameObject);
     }
 
     void stateActions()
     {
 
-            if (isAttacking)
+        if (isAttacking)
+        {
+            
+            agent.destination = target.transform.position;
+            if (checkDistanceToPlayer() < attackRadius && attackTimer <= 0)
             {
-
-                agent.destination = player.transform.position;
-                if (checkDistanceToPlayer() < attackRadius && attackTimer <= 0)
+                attackTimer = 120;
+                if (target == GameObject.FindGameObjectWithTag("Dog"))
                 {
-                    attackTimer = 120;
-                    //player.health -= damage;
-                    //if (player.isDead) {
-                    //hasGems = true;
-                    //hasKilledPlayer = true;
-                    //}
+                    target.GetComponent<SummonController>().takeDamage(15, 3);
                 }
-                if (attackTimer <= 0) attackTimer = 0;
-                attackTimer--;
-            }
-            if (isIdling)
-            {
-                if (hasGems)
+                if (target == player)
                 {
-                    //endlessly idle at center until player gets near
+                    target.GetComponent<PlayerController>().takeDamage(25, 5);
                 }
-                if (!hasGems)
-                {
-                    if (idleTimer <= 0) idleTimer = 0;
-                    idleTimer--;
-                }
+                //player.health -= damage;
+                //if (player.isDead) {
+                //hasGems = true;
+                //hasKilledPlayer = true;
+                //}
             }
-            if (isWalking)
+            if (attackTimer <= 0) attackTimer = 0;
+            attackTimer--;
+        }
+        if (isIdling)
+        {
+            if (hasGems)
             {
-                walkTimer--;
-                if (walkTimer <= 0) walkTimer = 0;
+                //endlessly idle at center until player gets near
             }
-            if (isGoingTowardsCenter)
+            if (!hasGems)
             {
+                if (idleTimer <= 0) idleTimer = 0;
+                idleTimer--;
+            }
+        }
+        if (isWalking)
+        {
+            walkTimer--;
+            if (walkTimer <= 0) walkTimer = 0;
+        }
+        if (isGoingTowardsCenter)
+        {
 
-                agent.destination = centerOfMap.transform.position;
-            }
-            if (isUsingGem)
-            {
-                //try to use gem
-                //spawn effects
-                //kill monke
+            agent.destination = centerOfMap.transform.position;
+        }
+        if (isUsingGem)
+        {
+            //try to use gem
+            //spawn effects
+            //kill monke
 
-                //drop gems
-            }
-        
+            //drop gems
+        }
+
     }
-    
+
+    private GameObject getTarget()
+    {
+        GameObject obj = player;
+        
+        if (GameObject.FindGameObjectWithTag("Dog") != null)
+        {
+            GameObject dogObj = GameObject.FindGameObjectWithTag("Dog");
+            if(checkDistanceToPoint(dogObj.transform.position) <= sightRange)
+            {
+                obj = dogObj;
+            }
+        }
+        return obj;
+    }
 
     float checkDistanceToPlayer()
     {
@@ -243,7 +284,7 @@ public class AIController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         //print("hit");        
-        
+
         if (collision.gameObject.CompareTag("LightningBolt"))
         {
             takeDamage(50, iframesReset);
