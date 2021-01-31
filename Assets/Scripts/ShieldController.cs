@@ -20,43 +20,51 @@ public class ShieldController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //ChecksForAbilityPressToMoveShield
-        if (Input.GetKey(KeyCode.V))
+        if (!PlayerController.timeFreeze)
         {
-            following = true;
-        }else following = false;
+            //ChecksForAbilityPressToMoveShield
+            if (Input.GetKey(KeyCode.V))
+            {
+                following = true;
+            }
+            else following = false;
 
-        if (Input.GetKey(KeyCode.K))
-        {
-            health = 0;
-        }
-        
-        //scale until it hits the proper size
-        if(this.transform.localScale.x < maxScale)
-        {
-            this.transform.localScale += new Vector3(growRate, growRate, growRate);
-        }
+            //Kills shield for testing
+            //if (Input.GetKey(KeyCode.K))
+            //{
+            //    health = 0;
+            //}
 
-        if (health <= 0)
-        {
-            //PlayDestructionAnimationHere
-            
-            //Starts cooldown inside PlayerController
-            PlayerController.resetShieldToggle = true;
+            //scale until it hits the proper size
+            if (this.transform.localScale.x < maxScale)
+            {
+                this.transform.localScale += new Vector3(growRate, growRate, growRate);
+            }
 
-            //  #KYS
-            Destroy(this.gameObject);
+            if (health <= 0)
+            {
+                //PlayDestructionAnimationHere
 
+                //Starts cooldown inside PlayerController
+                PlayerController.resetShieldToggle = true;
+
+                //  #KYS
+                Destroy(this.gameObject);
+
+            }
         }
 
     }
 
     private void FixedUpdate()
     {
-        if (following)
+        if (!PlayerController.timeFreeze)
         {
-            Vector3 absoluteDistance = new Vector3(this.transform.position.x - player.transform.position.x, this.transform.position.y - player.transform.position.y, this.transform.position.z - player.transform.position.z);
-            this.transform.position -= absoluteDistance / 5;
+            if (following)
+            {
+                Vector3 absoluteDistance = new Vector3(this.transform.position.x - player.transform.position.x, this.transform.position.y - player.transform.position.y, this.transform.position.z - player.transform.position.z);
+                this.transform.position -= absoluteDistance / 5;
+            }
         }
     }
 }

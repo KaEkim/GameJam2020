@@ -11,15 +11,16 @@ public class PlayerController : MonoBehaviour
     public static int fireBallCharge = 0;
     public static int lightningYOffset = 10;
     GameObject rotTarget;
-
     bool isGrounded = false;
-
+    public static bool timeFreeze = false;
     public float spawnRadius = 5f;
     public float dogRadius = 5f;
 
-    public Camera cam;
+    bool usingAimAbilities = false;
 
+    public Camera cam;
     public Transform target;
+    private bool isFlying = false;
 
     //Prefabs
     [Header("Prefabs")]
@@ -27,8 +28,6 @@ public class PlayerController : MonoBehaviour
     public GameObject shieldPrefab;
     public GameObject lightningPrefab;
     public GameObject summonPrefab;
-    public GameObject flightPrefab;
-
 
     //cooldowns
     [Header("CoolDowns")]
@@ -37,7 +36,7 @@ public class PlayerController : MonoBehaviour
     public static  bool lightningCoolDown = true;
     public static bool summonCoolDown = true;
     public static bool flightCoolDown = true;
-
+    public static bool timeCoolDown = true;
 
     //Gem States
     [Header("Gem States")]
@@ -53,8 +52,6 @@ public class PlayerController : MonoBehaviour
     public static bool resetShieldToggle = false;
     public static bool resetLightningToggle = false;
     public static bool resetSummonToggle = false;
-    public static bool resetFlightToggle = false;
-
 
     // Start is called before the first frame update
     void Start()
@@ -88,15 +85,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
-
         //LaunchShield
         if (Input.GetKey(KeyCode.V) && hasShieldGem && !GameObject.FindGameObjectWithTag("Shield") && shieldCoolDown)
         {
             spawnShield();
             shieldCoolDown = false;
         }
-
 
         // launch lightning
         
@@ -119,13 +113,31 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
         // summon golem dog
         if (Input.GetKey(KeyCode.Q) && hasSummonGem && summonCoolDown)
         {
             summonCoolDown = false;
             spawnGolem();
         }
+
+        // toggles the flying ability
+        if (Input.GetKey(KeyCode.F) && hasFlightGem && flightCoolDown)
+        {
+            flightCoolDown = false;
+            isFlying = true;
+            Invoke("disableFlight", 1.2f);
+            Invoke("resetFlight", 10);
+        }
+
+        // start TimeFreeze
+        if (Input.GetMouseButton(1) && timeCoolDown)
+        {
+            timeFreeze = true;
+            timeCoolDown = false;
+            Invoke("disableTime", 10);
+            Invoke("resetTime", 60);
+        }
+
 
             //Incase you need this @Jacob to edit the times of cooldowns
             // Invoke("NameOfFunction", TimeInSeconds)
@@ -135,20 +147,37 @@ public class PlayerController : MonoBehaviour
             if (resetShieldToggle) { Invoke("resetShield", 30); resetShieldToggle = false; }
             if (resetLightningToggle) { Invoke("resetLightning", 50); resetLightningToggle = false; }
             if (resetSummonToggle) { Invoke("resetSummon", 60); resetSummonToggle = false; }
-            if (resetFlightToggle) { Invoke("resetFlight", 30); resetFlightToggle = false; }
     }
 
     private void FixedUpdate()
     {
-        
+
         if (Input.GetKey(KeyCode.Space) && isGrounded)
         {
-            rb.AddForce(transform.up * 3f, ForceMode.Impulse);
+            rb.AddForce(transform.up * 200f, ForceMode.Impulse);
+        }
+        if (Input.GetKey(KeyCode.Space) && isFlying)
+        {
+            rb.AddForce(transform.up * 15f, ForceMode.Impulse);
 
         }
 
+        //if making an attack where you would want to turn forward for
+        if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.R) || Input.GetMouseButtonDown(0))
+        {
+            RotateForward("newW");
+            usingAimAbilities = true;
+
+        }
+        else
+        {
+            usingAimAbilities = false;
+        }
+
+        //else { usingAimAbilities = false; }
+
         //Input for movement
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W) && !usingAimAbilities)
         {
             if (Input.GetKey(KeyCode.D))
             {
@@ -166,7 +195,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A) && !usingAimAbilities)
         {
             if (Input.GetKey(KeyCode.W))
             {
@@ -185,7 +214,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S) && !usingAimAbilities)
         {
             if (Input.GetKey(KeyCode.A))
             {
@@ -204,7 +233,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D) && !usingAimAbilities)
         {
             if (Input.GetKey(KeyCode.W))
             {
@@ -222,14 +251,17 @@ public class PlayerController : MonoBehaviour
                 RotateForward("d");
             }
         }
+
     }
+
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            print("Touching");
+
+
         }
     }
     private void OnCollisionExit(Collision collision)
@@ -237,9 +269,11 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
-            print("NotTouching");
+
         }
     }
+
+
 
 
 
@@ -260,10 +294,26 @@ public class PlayerController : MonoBehaviour
     {
         summonCoolDown = true;
     }
+    private void disableFlight()
+    {
+        isFlying = false;
+    }
     private void resetFlight()
     {
+        print("CanFlyAgain");
         flightCoolDown = true;
     }
+    private void disableTime()
+    {
+        timeFreeze = false;
+
+    }
+    private void resetTime()
+    {
+        timeCoolDown = true;
+        print("CanFreezeAgain");
+    }
+   
 
     //Create Abilities
     private void spawnFireBall()
@@ -295,6 +345,7 @@ public class PlayerController : MonoBehaviour
 
     private void RotateForward(string directionLooking)
     {
+        //These three if statements check if you are doing anything that would effect your speed, and then change it if so
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
 
@@ -304,12 +355,22 @@ public class PlayerController : MonoBehaviour
         {
             newSpeed = newSpeed / 2f;
         }
-        transform.position += (transform.forward * newSpeed * Time.deltaTime);
+        if (isFlying)
+        {
+            newSpeed = newSpeed * 2f;
+        }
+
+        if (!usingAimAbilities)
+        {
+            transform.position += (transform.forward * newSpeed * Time.deltaTime);
+        }
+
 
         Vector3 straitAhead = new Vector3(0, 0, 0);
         Vector3 pos90 = new Vector3(0,90,0);
         Vector3 neg90 = new Vector3(0, -90, 0);
         Vector3 even180 = new Vector3(0, 180, 0);
+
 
         Vector3 wa = new Vector3(0, 45, 0);
         Vector3 ass = new Vector3(0, 135, 0);
@@ -324,9 +385,7 @@ public class PlayerController : MonoBehaviour
         {
             
             Quaternion angleSize = Quaternion.Lerp(transform.rotation, Quaternion.Euler(straitAhead) * camDir, Time.deltaTime * multiplier);
-
             transform.rotation = new Quaternion(0 , angleSize.y, 0, angleSize.w);
-
         }
 
         if (directionLooking == "a")
@@ -341,6 +400,7 @@ public class PlayerController : MonoBehaviour
             
             Quaternion angleSize = Quaternion.Lerp(transform.rotation, Quaternion.Euler(even180) * camDir, Time.deltaTime * multiplier);
             transform.rotation = new Quaternion(0, angleSize.y, 0, angleSize.w);
+
         }
 
         if (directionLooking == "d")
@@ -349,7 +409,10 @@ public class PlayerController : MonoBehaviour
             Quaternion angleSize = Quaternion.Lerp(transform.rotation, Quaternion.Euler(pos90) * camDir, Time.deltaTime * multiplier);
 
             transform.rotation = new Quaternion(0, angleSize.y, 0, angleSize.w);
+
         }
+
+
 
 
         if (directionLooking == "wa")
@@ -384,6 +447,49 @@ public class PlayerController : MonoBehaviour
             transform.rotation = new Quaternion(0, angleSize.y, 0, angleSize.w);
 
         }
+
+        if (directionLooking == "newW")
+        { 
+            //this quaternion needs to be changed to make it face forward always
+            Quaternion angleSize = new Quaternion(transform.rotation.x, cam.transform.rotation.y, transform.rotation.z, transform.rotation.w);
+
+            GameObject camControl = GameObject.FindGameObjectWithTag("GameController");
+
+            float camAngle = camControl.transform.rotation.w;
+
+            Vector3 rotFor = new Vector3(0, camAngle, 0);
+            Vector3 rotBack = new Vector3(0, camAngle * -1, 0);
+            Vector3 rotRight = new Vector3(0, camAngle + 1.5708f, 0);
+            Vector3 rotLeft = new Vector3(0, (camAngle + 1.5708f) * -1, 0);
+
+            transform.rotation = angleSize;
+
+
+            if (newSpeed == 0)
+            {
+                newSpeed = speed;
+            }
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                transform.position += (transform.forward * newSpeed * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                transform.position += (transform.forward * -1 * newSpeed * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                transform.position += (transform.right * -1 * newSpeed * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                transform.position += (transform.right * newSpeed * Time.deltaTime);
+            }
+        }
+
+        print(directionLooking);
+
     }
 
     private Vector3 pickPointInRadius()
@@ -394,4 +500,5 @@ public class PlayerController : MonoBehaviour
         originPoint.z += Random.Range(-spawnRadius, spawnRadius);
         return originPoint;
     }
+
 }

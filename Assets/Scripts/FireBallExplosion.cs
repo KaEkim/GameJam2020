@@ -7,7 +7,7 @@ public class FireBallExplosion : MonoBehaviour
 
     private Vector3 scaleChange;
     private int charge;
-    private float explodeTime = 1.5f;
+    private float explodeTime = .5f;
 
     AIController aiScript;
 
@@ -27,28 +27,19 @@ public class FireBallExplosion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.localScale += scaleChange;
-        
+        if (!PlayerController.timeFreeze)
+        {
+            this.transform.localScale += scaleChange;
+        }
     }
 
     private void destroy()
     {
-        PlayerController.fireBallCharge = 0;
-        Destroy(this.gameObject);
+        if (!PlayerController.timeFreeze)
+        {
+            PlayerController.fireBallCharge = 0;
+            Destroy(this.gameObject);
+        }
     }    
 
-    public bool checkDistToEnemies()
-    {
-        var objects = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (var obj in objects)
-        {
-            float dist = Vector3.Distance(transform.position, obj.transform.position);
-            if (dist <= -20)
-            {
-                aiScript = obj.transform.GetComponent<AIController>();
-                return true;
-            }            
-        }
-        return false;
-    }
 }

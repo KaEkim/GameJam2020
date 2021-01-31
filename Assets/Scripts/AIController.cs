@@ -54,6 +54,10 @@ public class AIController : MonoBehaviour
     private float walkTimer = 0;
     private float defaultWalkTimer = 2000;
 
+    private bool doOnce = false;
+    private Vector3 currPos;
+    private Quaternion currRot;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -65,123 +69,153 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        stateManagement();
-        stateActions();
+        if (!PlayerController.timeFreeze)
+        {
+            doOnce = false;
+            agent.updateRotation = true;
+            agent.updatePosition = true;
+            stateManagement();
+            this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            stateActions();
 
-        if (iframes <= 0) iframes = 0;
-        iframes -= Time.deltaTime;
-    }         
+            if (iframes <= 0) iframes = 0;
+            iframes -= Time.deltaTime;
+        }
+        else
+        {
+            
+            if (doOnce)
+            {
+                currPos = transform.position;
+                currRot = transform.rotation;
+                //agent.destination = this.transform.position;
+                doOnce = true;
+                
+            }
+            agent.updateRotation = false;
+            agent.updatePosition = false;
+            this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll; 
+
+            //this.transform.position = currPos;
+            //this.transform.rotation = currRot;
+            agent.destination = transform.position;
+            
+        }
+    }
     
     void stateManagement()
     {
-        if (!hasGems)
-        {
-            // idle/walking to attacking
-            if (checkDistanceToPlayer() < sightRange)
+            if (!hasGems)
             {
-                isAttacking = true;
-                isIdling = false;
-                isWalking = false;
-            }
-            // attacking to idle
-            if (checkDistanceToPlayer() > sightRange && isAttacking)
-            {
-                isAttacking = false;
-                isIdling = true;
-                idleTimer = defaultIdleTimer;
-            }
-            // idle to walking
-            if (idleTimer <= 0 && !isAttacking && isIdling)
-            {
-                isWalking = true;
-                isIdling = false;
-                randomPoint = Random.insideUnitSphere * maxDistance;
-                agent.destination = randomPoint;
-                walkTimer = defaultWalkTimer;
-            }
-            // walking to idle
-            if (checkDistanceToPoint(randomPoint) <= 5 || walkTimer <= 0)
-            {
-                if (isWalking)
+                // idle/walking to attacking
+                if (checkDistanceToPlayer() < sightRange)
                 {
-                    agent.destination = transform.position;
+                    isAttacking = true;
+                    isIdling = false;
                     isWalking = false;
+                }
+                // attacking to idle
+                if (checkDistanceToPlayer() > sightRange && isAttacking)
+                {
+                    isAttacking = false;
                     isIdling = true;
                     idleTimer = defaultIdleTimer;
                 }
+                // idle to walking
+                if (idleTimer <= 0 && !isAttacking && isIdling)
+                {
+                    isWalking = true;
+                    isIdling = false;
+                    randomPoint = Random.insideUnitSphere * maxDistance;
+                    agent.destination = randomPoint;
+                    walkTimer = defaultWalkTimer;
+                }
+                // walking to idle
+                if (checkDistanceToPoint(randomPoint) <= 5 || walkTimer <= 0)
+                {
+                    if (isWalking)
+                    {
+                        agent.destination = transform.position;
+                        isWalking = false;
+                        isIdling = true;
+                        idleTimer = defaultIdleTimer;
+                    }
+                }
             }
-        }
-        if (hasGems)
-        {
-            if (hasKilledPlayer)
+            if (hasGems)
             {
-                isAttacking = false;
-                isWalking = false;
-                isGoingTowardsCenter = true;
+                if (hasKilledPlayer)
+                {
+                    isAttacking = false;
+                    isWalking = false;
+                    isGoingTowardsCenter = true;
+                }
+                if (checkDistanceToCenter() <= 5 && isGoingTowardsCenter)
+                {
+                    isGoingTowardsCenter = false;
+                    hasKilledPlayer = false;
+                    isIdling = true;
+                }
+                if (checkDistanceToPlayer() <= 10)
+                {
+                    isGoingTowardsCenter = false;
+                    isIdling = false;
+                    isUsingGem = true;
+                }
             }
-            if (checkDistanceToCenter() <= 5 && isGoingTowardsCenter)
-            {
-                isGoingTowardsCenter = false;
-                hasKilledPlayer = false;
-                isIdling = true;
-            }
-            if (checkDistanceToPlayer() <= 10)
-            {
-                isGoingTowardsCenter = false;
-                isIdling = false;
-                isUsingGem = true;
-            }
-        }
+        
     }
 
     void stateActions()
     {
-        if (isAttacking)
-        {
-            
-            agent.destination = player.transform.position;
-            if (checkDistanceToPlayer() < attackRadius && attackTimer <= 0)
+
+            if (isAttacking)
             {
-                attackTimer = 120;
-                //player.health -= damage;
-                //if (player.isDead) {
+
+                agent.destination = player.transform.position;
+                if (checkDistanceToPlayer() < attackRadius && attackTimer <= 0)
+                {
+                    attackTimer = 120;
+                    //player.health -= damage;
+                    //if (player.isDead) {
                     //hasGems = true;
                     //hasKilledPlayer = true;
-                //}
+                    //}
+                }
+                if (attackTimer <= 0) attackTimer = 0;
+                attackTimer--;
             }
-            if (attackTimer <= 0) attackTimer = 0;
-            attackTimer--;
-        }
-        if (isIdling)
-        {
-            if (hasGems)
+            if (isIdling)
             {
-                //endlessly idle at center until player gets near
+                if (hasGems)
+                {
+                    //endlessly idle at center until player gets near
+                }
+                if (!hasGems)
+                {
+                    if (idleTimer <= 0) idleTimer = 0;
+                    idleTimer--;
+                }
             }
-            if (!hasGems)
+            if (isWalking)
             {
-                if (idleTimer <= 0) idleTimer = 0;
-                idleTimer--;
+                walkTimer--;
+                if (walkTimer <= 0) walkTimer = 0;
             }
-        }
-        if (isWalking)
-        {
-            walkTimer--;
-            if (walkTimer <= 0) walkTimer = 0;
-        }
-        if (isGoingTowardsCenter)
-        {
-            
-            agent.destination = centerOfMap.transform.position;
-        }
-        if (isUsingGem)
-        {
-            //try to use gem
-            //spawn effects
-            //kill monke
+            if (isGoingTowardsCenter)
+            {
 
-            //drop gems
-        }
+                agent.destination = centerOfMap.transform.position;
+            }
+            if (isUsingGem)
+            {
+                //try to use gem
+                //spawn effects
+                //kill monke
+
+                //drop gems
+            }
+        
     }
     
 
@@ -208,7 +242,7 @@ public class AIController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("hit");        
+        //print("hit");        
         
         if (collision.gameObject.CompareTag("LightningBolt"))
         {
@@ -220,7 +254,7 @@ public class AIController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("explosion"))
         {
-            print("booom");
+            //print("booom");
             takeDamage(1, 0);
         }
     }

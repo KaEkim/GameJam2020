@@ -22,17 +22,20 @@ public class LightningCast : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        spawnTimer -= Time.deltaTime;
-        if(spawnTimer <= 0 && spawnOnce)
+        if (!PlayerController.timeFreeze)
         {
-            spawnOnce = false;
-            Instantiate(lightningBoltPrefab, transform.position, new Quaternion(0,0,0,0));
-        }
+            spawnTimer -= Time.deltaTime;
+            if (spawnTimer <= 0 && spawnOnce)
+            {
+                spawnOnce = false;
+                Instantiate(lightningBoltPrefab, transform.position, new Quaternion(0, 0, 0, 0));
+            }
 
-        if (isAttackOver)
-        {
-            
-            Invoke("destroy", removeTimer);
+            if (isAttackOver)
+            {
+
+                Invoke("destroy", removeTimer);
+            }
         }
     }
 

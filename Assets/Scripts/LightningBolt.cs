@@ -22,26 +22,29 @@ public class LightningBolt : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasHitTarget)
+        if (!PlayerController.timeFreeze)
         {
-            p += velocityDown;
-            //transform.position = new Vector3(transform.position.x, transform.position.y - (velocityDown * Time.deltaTime), transform.position.z);
-            transform.position = Vector3.Lerp(spawn, new Vector3(spawn.x, spawn.y - PlayerController.lightningYOffset, spawn.z), p);
-            if (p >= 1.1f) hasHitTarget = true;
-        }
-
-        if (hasHitTarget)
-        {
-            if (this.transform.localScale.x < maxScale)
+            if (!hasHitTarget)
             {
-                this.transform.localScale += new Vector3(growRate, growRate, growRate);
+                p += velocityDown;
+                //transform.position = new Vector3(transform.position.x, transform.position.y - (velocityDown * Time.deltaTime), transform.position.z);
+                transform.position = Vector3.Lerp(spawn, new Vector3(spawn.x, spawn.y - PlayerController.lightningYOffset, spawn.z), p);
+                if (p >= 1.1f) hasHitTarget = true;
             }
-        }
 
-        if(this.transform.localScale.x >= maxScale)
-        {
-            LightningCast.isAttackOver = true;
-            Destroy(this.gameObject);
+            if (hasHitTarget)
+            {
+                if (this.transform.localScale.x < maxScale)
+                {
+                    this.transform.localScale += new Vector3(growRate, growRate, growRate);
+                }
+            }
+
+            if (this.transform.localScale.x >= maxScale)
+            {
+                LightningCast.isAttackOver = true;
+                Destroy(this.gameObject);
+            }
         }
 
     }

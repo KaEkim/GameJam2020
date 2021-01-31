@@ -78,7 +78,6 @@ public class FollowPlayer : MonoBehaviour
         targetDollyDis += scroll * mouseScrollMultiplier;
         targetDollyDis = Mathf.Clamp(targetDollyDis, 2.5f, 15);
 
-
         dollyDis = AnimMath.Slide(dollyDis, targetDollyDis, .05f); // EASE
         //target.transform.position = new Vector3(0, 0, -dollyDis);
 
@@ -93,9 +92,6 @@ public class FollowPlayer : MonoBehaviour
         // Quaternion targetRotation
         transform.rotation = Quaternion.Euler(-pitch, yaw, 0);
         //transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.01f); // Could use .Slerp
-
-
-
     }
 
 }

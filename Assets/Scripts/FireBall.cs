@@ -23,13 +23,17 @@ public class FireBall : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Always fly forward
-        transform.position += this.transform.forward * speed * Time.deltaTime;
-
-        //If you get far enough from your spawn location, trigger explosion
-        if (Mathf.Abs(initialLocation.x - this.transform.position.x) > 20 || Mathf.Abs(initialLocation.z - this.transform.position.z) > 20)
+        if (!PlayerController.timeFreeze)
         {
-            spawnBoom();
+
+            //Always fly forward
+            transform.position += this.transform.forward * speed * Time.deltaTime;
+
+            //If you get far enough from your spawn location, trigger explosion
+            if (Mathf.Abs(initialLocation.x - this.transform.position.x) > 20 || Mathf.Abs(initialLocation.z - this.transform.position.z) > 20)
+            {
+                spawnBoom();
+            }
         }
     }
 
