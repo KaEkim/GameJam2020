@@ -10,6 +10,9 @@ TagManager:
   - Ground
   - Cloud
   - LightningBolt
+  - Rock
+  - RockFollow
+  - Dog
   layers:
   - Default
   - TransparentFX
